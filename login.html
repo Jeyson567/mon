@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Restaurant System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/global.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen flex items-center justify-center">
+    <main class="w-full max-w-md p-8 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-xl">
+      <h1 class="text-2xl font-bold mb-2">GRAN MONTANA</h1>
+      <p class="text-zinc-400 mb-6">Inicia sesión para continuar</p>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="correo" class="block text-sm mb-1">Correo</label>
+          <input id="correo" type="email" class="input-base" placeholder="admin@correo.com" required />
+        </div>
+        <div>
+          <label for="password" class="block text-sm mb-1">Contraseña</label>
+          <input id="password" type="password" class="input-base" placeholder="••••••••" required />
+        </div>
+        <button id="btn-login" type="submit" class="btn-primary w-full">Ingresar</button>
+      </form>
+    </main>
+
+    <div id="global-loader" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm items-center justify-center">
+      <div class="loader"></div>
+    </div>
+
+    <div id="toast-root" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+
+    <script type="module" src="./js/auth.js"></script>
+  </body>
+</html>

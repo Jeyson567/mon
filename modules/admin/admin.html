@@ -1,0 +1,181 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administración | GRAN MONTANA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/layout.css" />
+    <link rel="stylesheet" href="../../css/admin.css" />
+    <link rel="stylesheet" href="../../css/tables.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen app-body">
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <div class="app-main">
+        <header class="app-topbar">
+          <button type="button" id="sidebar-toggle" class="app-menu-btn" aria-expanded="false" aria-controls="sidebar">
+            <span aria-hidden="true">☰</span> Menú
+          </button>
+          <span class="app-topbar-title">Admin</span>
+        </header>
+      <div class="app-content flex-1 flex flex-col min-w-0">
+        <header class="border-b border-zinc-800 bg-zinc-900/80 p-4">
+          <p class="text-xs text-zinc-500 uppercase tracking-widest">Administración</p>
+          <h1 class="text-xl font-bold">GRAN MONTANA</h1>
+          <p class="text-sm text-zinc-400">Hola, <span id="admin-user-name">Admin</span></p>
+          <nav class="flex flex-wrap gap-2 mt-3" id="admin-tabs">
+            <button type="button" data-tab="productos" class="admin-tab active px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Productos</button>
+            <button type="button" data-tab="categorias" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Categorías</button>
+            <button type="button" data-tab="mesas" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Mesas</button>
+            <button type="button" data-tab="inventario" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Inventario</button>
+            <button type="button" data-tab="usuarios" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Usuarios</button>
+            <button type="button" data-tab="reportes" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Reportes</button>
+            <button type="button" data-tab="configuracion" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Config</button>
+          </nav>
+        </header>
+
+        <main id="admin-app" class="flex-1 p-4 overflow-auto">
+      <!-- PRODUCTOS -->
+      <section id="panel-productos" class="admin-panel active">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <h2 class="text-lg font-bold">Menú — Productos</h2>
+          <button type="button" data-admin-action="producto:add" class="btn-primary">+ Agregar producto</button>
+        </div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Disponible</th>
+                <th>Inventario</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-productos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CATEGORÍAS -->
+      <section id="panel-categorias" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <h2 class="text-lg font-bold">Categorías del menú</h2>
+          <button type="button" data-admin-action="categoria:add" class="btn-primary">+ Agregar categoría</button>
+        </div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Orden</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-categorias"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MESAS -->
+      <section id="panel-mesas" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <h2 class="text-lg font-bold">Mesas del restaurante</h2>
+          <button type="button" data-admin-action="mesa:add" class="btn-primary">+ Agregar mesa</button>
+        </div>
+        <div id="lista-mesas" class="table-grid"></div>
+      </section>
+
+      <!-- INVENTARIO -->
+      <section id="panel-inventario" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <h2 class="text-lg font-bold">Inventario</h2>
+          <button type="button" data-admin-action="inventario:add" class="btn-primary">+ Agregar producto inventario</button>
+        </div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>Unidad</th>
+                <th>Mínimo</th>
+                <th>Estado</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-inventario"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- USUARIOS -->
+      <section id="panel-usuarios" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <h2 class="text-lg font-bold">Usuarios del sistema</h2>
+          <button type="button" data-admin-action="usuario:add" class="btn-primary">+ Agregar usuario</button>
+        </div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Activo</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-usuarios"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-reportes" class="admin-panel">
+        <h2 class="text-lg font-bold mb-4">Reportes — ventas y propinas</h2>
+        <div id="reportes-resumen" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6"></div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                <th>Fecha</th>
+                <th>Mesa</th>
+                <th>Subtotal</th>
+                <th>Propina</th>
+                <th>Total</th>
+                <th>Pago</th>
+              </tr>
+            </thead>
+            <tbody id="lista-reportes-ventas"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-configuracion" class="admin-panel">
+        <h2 class="text-lg font-bold mb-4">Configuración</h2>
+        <article class="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 max-w-lg">
+          <p class="text-zinc-400 text-sm mb-2">Nombre en tickets</p>
+          <p class="text-2xl font-bold text-orange-400">GRAN MONTANA</p>
+          <p class="text-sm text-zinc-500 mt-4">Correlativo de tickets: colección <code>configuracion/tickets</code></p>
+          <p class="text-sm text-zinc-500">Propina: siempre manual en módulo Caja</p>
+        </article>
+      </section>
+        </main>
+      </div>
+      </div>
+    </div>
+
+    <div id="toast-root" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+    <div id="global-loader" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm items-center justify-center">
+      <div class="loader"></div>
+    </div>
+
+    <script type="module" src="./admin.js"></script>
+  </body>
+</html>

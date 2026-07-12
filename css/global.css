@@ -1,0 +1,110 @@
+:root {
+  color-scheme: dark;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.input-base {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(63 63 70);
+  background: rgb(24 24 27);
+  padding: 0.75rem 0.875rem;
+  color: rgb(244 244 245);
+  outline: none;
+}
+
+.input-base:focus {
+  border-color: rgb(249 115 22);
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  border-radius: 0.75rem;
+  padding: 0.65rem 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  touch-action: manipulation;
+}
+
+button,
+[role="button"],
+a.sidebar-link {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+  background: rgb(234 88 12);
+}
+
+.btn-primary:hover {
+  background: rgb(194 65 12);
+}
+
+.btn-secondary {
+  background: rgb(39 39 42);
+  border: 1px solid rgb(63 63 70);
+}
+
+.btn-secondary:hover {
+  background: rgb(63 63 70);
+}
+
+.btn-danger {
+  background: rgb(220 38 38);
+}
+
+.btn-danger:hover {
+  background: rgb(185 28 28);
+}
+
+.loader {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgb(249 115 22);
+  border-radius: 9999px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.table-card {
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px solid rgb(63 63 70);
+  transition: transform 0.2s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-2px);
+}
+
+.estado-libre {
+  background: rgba(34, 197, 94, 0.2);
+}
+.estado-ocupada {
+  background: rgba(239, 68, 68, 0.2);
+}
+.estado-cobrando {
+  background: rgba(234, 179, 8, 0.2);
+}
+.estado-pagada {
+  background: rgba(59, 130, 246, 0.2);
+}
+.estado-reservada {
+  background: rgba(168, 85, 247, 0.2);
+}

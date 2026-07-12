@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reimpresión tickets | GRAN MONTANA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/layout.css" />
+    <link rel="stylesheet" href="../../css/tickets.css" />
+    <link rel="stylesheet" href="../../css/reimpresion.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen app-body">
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <div class="app-main">
+        <header class="app-topbar">
+          <button type="button" id="sidebar-toggle" class="app-menu-btn" aria-expanded="false" aria-controls="sidebar">
+            <span aria-hidden="true">☰</span> Menú
+          </button>
+          <span class="app-topbar-title">Tickets</span>
+        </header>
+      <main class="app-content flex-1 p-4 overflow-auto">
+        <header class="mb-6">
+          <h1 class="text-2xl font-bold">Reimpresión de tickets</h1>
+          <p class="text-zinc-400 mt-1">Busca ventas anteriores y reimprime en formato 80mm</p>
+        </header>
+
+        <section class="reimp-filters rounded-2xl border border-zinc-800 bg-zinc-900/80 p-4 mb-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+            <div>
+              <label class="text-xs text-zinc-500">Nº ticket</label>
+              <input type="text" id="filtro-ticket" class="input-base mt-1" placeholder="TK-000001" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Fecha</label>
+              <input type="date" id="filtro-fecha" class="input-base mt-1" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Mesa</label>
+              <input type="text" id="filtro-mesa" class="input-base mt-1" placeholder="Mesa 1" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Mesero</label>
+              <input type="text" id="filtro-mesero" class="input-base mt-1" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Método pago</label>
+              <select id="filtro-pago" class="input-base mt-1">
+                <option value="">Todos</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="tarjeta">Tarjeta</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Estado</label>
+              <select id="filtro-estado" class="input-base mt-1">
+                <option value="">Todos</option>
+                <option value="pagado">Pagado</option>
+                <option value="anulado">Anulado</option>
+                <option value="reembolsado">Reembolsado</option>
+              </select>
+            </div>
+          </div>
+          <p id="reimp-contador" class="text-sm text-zinc-500 mt-3">0 tickets</p>
+        </section>
+
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800">
+          <table class="w-full text-sm">
+            <thead class="bg-zinc-900 text-zinc-400">
+              <tr>
+                <th class="p-3 text-left">Ticket</th>
+                <th class="p-3 text-left">Fecha</th>
+                <th class="p-3 text-left">Hora</th>
+                <th class="p-3 text-left">Mesa</th>
+                <th class="p-3 text-left">Mesero</th>
+                <th class="p-3 text-right">Total</th>
+                <th class="p-3 text-left">Pago</th>
+                <th class="p-3 text-left">Estado</th>
+                <th class="p-3 text-left">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="reimp-tabla"></tbody>
+          </table>
+        </div>
+      </main>
+      </div>
+    </div>
+    <div id="toast-root" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <script type="module" src="./reimpresion.js"></script>
+  </body>
+</html>

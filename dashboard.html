@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | GRAN MONTANA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./css/global.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen app-body">
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <div class="app-main">
+        <header class="app-topbar">
+          <button type="button" id="sidebar-toggle" class="app-menu-btn" aria-expanded="false" aria-controls="sidebar">
+            <span aria-hidden="true">☰</span> Menú
+          </button>
+          <span class="app-topbar-title">Dashboard</span>
+        </header>
+      <main class="app-content flex-1 p-4 sm:p-6 overflow-auto">
+        <header class="mb-6 flex items-center justify-between">
+          <h1 class="text-2xl font-bold">GRAN MONTANA</h1>
+          <p class="text-zinc-400 text-sm">Panel principal</p>
+        </header>
+        <section id="dashboard-content" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></section>
+      </main>
+      </div>
+    </div>
+    <div id="toast-root" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,462 @@
+/* ——— App shell & sidebar responsive ——— */
+
+.app-body {
+  overflow-x: hidden;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100vw;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Overlay móvil */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  pointer-events: none;
+}
+
+body.sidebar-open .sidebar-overlay {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Topbar móvil */
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  padding-top: max(0.65rem, env(safe-area-inset-top));
+  background: rgb(24 24 27 / 0.95);
+  border-bottom: 1px solid rgb(63 63 70);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .app-topbar {
+    display: none;
+  }
+}
+
+.app-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgb(39 39 42);
+  border: 1px solid rgb(63 63 70);
+  color: rgb(244 244 245);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.app-menu-btn:hover {
+  background: rgb(63 63 70);
+}
+
+.app-topbar-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgb(251 146 60);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Sidebar base */
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  height: 100%;
+  height: 100dvh;
+  width: min(18rem, 88vw);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  background: rgb(24 24 27);
+  border-right: 1px solid rgb(63 63 70);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2,  1), width 0.25s ease;
+  overflow: hidden;
+}
+
+body.sidebar-open .app-sidebar {
+  transform: translateX(0);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+}
+
+/* Tablet: barra compacta visible */
+@media (min-width: 768px) {
+  .app-sidebar {
+    position: sticky;
+    top: 0;
+    transform: translateX(0);
+    width: 4.25rem;
+    padding: 0.75rem 0.5rem;
+    flex-shrink: 0;
+    box-shadow: none;
+  }
+
+  body.sidebar-open .app-sidebar {
+    box-shadow: none;
+  }
+
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  .sidebar-brand-sub,
+  .sidebar-brand-title,
+  .sidebar-link-label,
+  #sidebar-logout .logout-label {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding-bottom: 0.5rem;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding: 0.75rem !important;
+  }
+
+  .sidebar-link-icon {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  #sidebar-logout {
+    padding: 0.75rem !important;
+    font-size: 1.25rem;
+  }
+
+  #sidebar-logout::before {
+    content: "⎋";
+  }
+
+  body.sidebar-tablet-expanded .app-sidebar {
+    width: 18rem;
+    padding: 1rem;
+  }
+
+  body.sidebar-tablet-expanded .sidebar-brand-sub,
+  body.sidebar-tablet-expanded .sidebar-brand-title,
+  body.sidebar-tablet-expanded .sidebar-link-label,
+  body.sidebar-tablet-expanded #sidebar-logout .logout-label {
+    opacity: 1;
+    width: auto;
+    height: auto;
+    position: static;
+    pointer-events: auto;
+    overflow: visible;
+  }
+
+  body.sidebar-tablet-expanded .sidebar-link {
+    justify-content: flex-start;
+    padding: 0.65rem 0.85rem !important;
+  }
+
+  body.sidebar-tablet-expanded #sidebar-logout::before {
+    content: none;
+  }
+
+  .sidebar-tablet-toggle {
+    display: flex !important;
+  }
+}
+
+/* Escritorio: sidebar completo */
+@media (min-width: 1024px) {
+  .app-sidebar {
+    width: 18rem;
+    padding: 1rem;
+  }
+
+  .sidebar-brand-sub,
+  .sidebar-brand-title,
+  .sidebar-link-label,
+  #sidebar-logout .logout-label {
+    opacity: 1;
+    width: auto;
+    height: auto;
+    position: static;
+    pointer-events: auto;
+    overflow: visible;
+  }
+
+  .sidebar-link {
+    justify-content: flex-start;
+    padding: 0.65rem 0.85rem !important;
+  }
+
+  .sidebar-tablet-toggle {
+    display: none !important;
+  }
+
+  #sidebar-logout::before {
+    content: none;
+  }
+}
+
+/* Marca y nav sidebar */
+.sidebar-brand {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: rgb(161 161 170);
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-brand-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  color: rgb(251 146 60);
+  margin-top: 0.15rem;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-tablet-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 0.5rem;
+  background: rgb(39 39 42);
+  border: 1px solid rgb(63 63 70);
+  color: rgb(244 244 245);
+  font-size: 1.1rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sidebar-tablet-toggle {
+    display: flex;
+  }
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: rgb(244 244 245);
+  background: rgb(39 39 42);
+  transition: background 0.15s ease, color 0.15s ease;
+  min-height: 44px;
+}
+
+.sidebar-link:hover {
+  background: rgb(63 63 70);
+}
+
+.sidebar-link.is-active {
+  background: rgb(234 88 12);
+  color: white;
+}
+
+.sidebar-link-icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  text-align: center;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.sidebar-link-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease;
+}
+
+#sidebar-logout {
+  margin-top: auto;
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+/* Tablas responsive */
+.table-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 1rem;
+}
+
+.table-scroll-wrap table {
+  min-width: 640px;
+}
+
+@media (max-width: 767px) {
+  .table-scroll-wrap--cards table {
+    min-width: 0;
+  }
+}
+
+/* Modales móvil */
+@media (max-width: 767px) {
+  .modal-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .modal-overlay article {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+    margin: 0 !important;
+    border-radius: 1rem 1rem 0 0 !important;
+    overflow-y: auto;
+  }
+}
+
+/* Cocina — pantallas grandes / horizontal */
+.kitchen-board {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .kitchen-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .kitchen-board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .kitchen-board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.kitchen-card {
+  padding: 1.25rem !important;
+}
+
+@media (min-width: 768px) {
+  .kitchen-card {
+    padding: 1.5rem !important;
+  }
+
+  .kitchen-card h3 {
+    font-size: 1.75rem !important;
+  }
+
+  .kitchen-card .btn-primary,
+  .kitchen-card .btn-secondary {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+}
+
+/* Caja — grid mesas */
+.cashier-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .cashier-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .cashier-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Utilidades táctiles */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Evitar zoom iOS en inputs */
+@media (max-width: 767px) {
+  .input-base,
+  select.input-base,
+  textarea.input-base {
+    font-size: 16px;
+  }
+}

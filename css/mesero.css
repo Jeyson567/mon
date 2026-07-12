@@ -1,0 +1,188 @@
+.mesa-card-btn {
+  cursor: pointer;
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  min-height: 5.75rem;
+  border: 2px solid rgb(63 63 70);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: left;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+.mesa-card-btn:hover {
+  transform: translateY(-4px);
+  border-color: rgb(249 115 22);
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.15);
+}
+
+.mesa-card-btn:active {
+  transform: translateY(-1px);
+}
+
+.mesa-card-btn .mesa-tap-hint {
+  font-size: 0.75rem;
+  color: rgb(161 161 170);
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.producto-pos-btn {
+  cursor: pointer;
+  min-height: 5.75rem;
+  border-radius: 1rem;
+  border: 2px solid rgb(63 63 70);
+  background: rgb(24 24 27);
+  padding: 1rem;
+  text-align: left;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+  width: 100%;
+}
+
+#pedido-productos {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  #pedido-productos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  #pedido-productos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  #pedido-productos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1023px) {
+  #view-pedido > .grid {
+    grid-template-columns: 1fr !important;
+    overflow-y: auto;
+    height: auto;
+    max-height: none;
+  }
+
+  #view-pedido {
+    overflow-y: auto;
+  }
+
+  .cat-tab {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+}
+
+.producto-pos-btn:hover {
+  border-color: rgb(249 115 22);
+  background: rgb(39 39 42);
+  transform: scale(1.02);
+}
+
+.producto-pos-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cat-tab {
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+
+.cat-tab.active {
+  background: rgb(234 88 12);
+  color: white;
+}
+
+.cat-tab:not(.active) {
+  background: rgb(39 39 42);
+}
+
+.linea-pedido {
+  border-radius: 0.75rem;
+  border: 1px solid rgb(63 63 70);
+  padding: 0.75rem;
+  background: rgb(24 24 27);
+}
+
+.linea-pedido-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.linea-pedido-precio {
+  min-width: 4.5rem;
+  text-align: right;
+}
+
+.btn-eliminar-linea {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(252 165 165);
+  background: rgb(127 29 29 / 0.35);
+  border: 1px solid rgb(185 28 28 / 0.5);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease;
+}
+
+.btn-eliminar-linea:hover {
+  background: rgb(185 28 28 / 0.45);
+  color: white;
+}
+
+.pos-search-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+@media (max-width: 767px) {
+  .pos-search-sticky {
+    top: 0;
+  }
+}
+
+.pos-search-input {
+  font-size: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-color: rgb(249 115 22 / 0.35);
+}
+
+.pos-search-input:focus {
+  border-color: rgb(249 115 22);
+  box-shadow: 0 0 0 2px rgb(249 115 22 / 0.2);
+}
+
+.pos-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgb(161 161 170);
+  font-size: 1.1rem;
+  pointer-events: none;
+}

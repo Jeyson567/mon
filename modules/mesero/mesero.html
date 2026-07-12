@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mesero | GRAN MONTANA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/layout.css" />
+    <link rel="stylesheet" href="../../css/tables.css" />
+    <link rel="stylesheet" href="../../css/mesero.css" />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 min-h-screen app-body">
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <div class="app-main">
+        <header class="app-topbar">
+          <button type="button" id="sidebar-toggle" class="app-menu-btn" aria-expanded="false" aria-controls="sidebar">
+            <span aria-hidden="true">☰</span> Menú
+          </button>
+          <span class="app-topbar-title">Mesero</span>
+        </header>
+      <main class="app-content flex-1 flex flex-col min-h-0 overflow-hidden">
+        <!-- VISTA: GRID DE MESAS -->
+        <section id="view-mesas" class="flex-1 p-4 overflow-auto">
+          <div class="mb-6">
+            <h1 class="text-2xl font-bold">Mesas</h1>
+            <p class="text-zinc-400 mt-1">Toca una mesa para abrir el pedido</p>
+          </div>
+          <section id="mesas-grid" class="table-grid"></section>
+        </section>
+
+        <!-- VISTA: PEDIDO DE MESA (POS) -->
+        <section id="view-pedido" class="hidden flex-1 flex flex-col min-h-0">
+          <header class="border-b border-zinc-800 bg-zinc-900/90 p-4 shrink-0">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <button type="button" id="btn-volver-mesas" class="btn-secondary text-sm mb-2">← Regresar a mesas</button>
+                <h1 class="text-2xl font-bold" id="pedido-mesa-titulo">Mesa —</h1>
+                <p class="text-sm text-zinc-400">
+                  Estado: <span id="pedido-mesa-estado" class="text-orange-400 font-semibold uppercase">—</span>
+                  · Mesero: <span id="pedido-mesa-mesero">—</span>
+                </p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-zinc-500 uppercase">Total mesa</p>
+                <p class="text-3xl font-bold text-orange-400" id="pedido-mesa-total">Q0.00</p>
+              </div>
+            </div>
+          </header>
+
+          <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-0 overflow-hidden">
+            <!-- Carrito -->
+            <aside class="border-r border-zinc-800 flex flex-col min-h-0 bg-zinc-900/50 p-4">
+              <h2 class="font-bold text-lg mb-3">Pedido actual</h2>
+              <div id="pedido-lineas" class="flex-1 overflow-y-auto space-y-2 min-h-[120px]"></div>
+              <div class="mt-4 pt-4 border-t border-zinc-800 space-y-3 shrink-0">
+                <button type="button" id="btn-producto-adicional" class="btn-secondary w-full py-2.5 text-sm border border-dashed border-orange-500/50 text-orange-300">
+                  + Producto adicional
+                </button>
+                <div>
+                  <label class="text-sm text-zinc-400">Notas del pedido</label>
+                  <textarea id="pedido-notas-mesa" class="input-base mt-1 min-h-[60px]" placeholder="Ej: sin cebolla, extra picante..."></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button type="button" id="btn-enviar-cocina" class="btn-primary py-3 text-base w-full min-h-[48px]">Enviar a cocina</button>
+                  <button type="button" id="btn-cobrar-mesa" class="btn-secondary py-3 text-base w-full min-h-[48px]">Cobrar mesa</button>
+                </div>
+                <button type="button" id="btn-cancelar-mesa" class="btn-danger w-full py-2.5 text-sm hidden">Cancelar mesa</button>
+              </div>
+            </aside>
+
+            <!-- Menú productos -->
+            <section class="flex flex-col min-h-0 overflow-hidden relative">
+              <div class="pos-search-sticky shrink-0 p-4 pb-2 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur z-10">
+                <h2 class="font-bold text-lg mb-3">Agregar productos</h2>
+                <div class="relative">
+                  <span class="pos-search-icon" aria-hidden="true">⌕</span>
+                  <input
+                    type="search"
+                    id="pedido-buscar-producto"
+                    class="input-base pos-search-input pl-10"
+                    placeholder="Buscar producto..."
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+              <div class="flex-1 overflow-y-auto p-4 pt-2 min-h-0">
+                <div id="pedido-categorias" class="flex flex-wrap gap-2 mb-4 shrink-0"></div>
+                <div id="pedido-productos" class="content-start"></div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+      </div>
+    </div>
+    <div id="toast-root" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+    <script type="module" src="./mesero.js"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+﻿#ticket-print-root {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #ticket-print-root,
+  #ticket-print-root * {
+    visibility: visible;
+  }
+
+  #ticket-print-root {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+  }
+
+  #ticket-print {
+    width: 80mm;
+    font-family: monospace, "Courier New", Courier;
+  }
+}

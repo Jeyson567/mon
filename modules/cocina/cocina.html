@@ -1,0 +1,45 @@
+﻿<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cocina | GRAN MONTANA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/global.css" />
+    <link rel="stylesheet" href="../../css/layout.css" />
+    <link rel="stylesheet" href="../../css/kitchen.css" />
+  </head>
+  <body class="bg-black text-zinc-100 min-h-screen app-body">
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <div class="app-shell">
+      <aside id="sidebar" class="app-sidebar"></aside>
+      <div class="app-main">
+        <header class="app-topbar">
+          <button type="button" id="sidebar-toggle" class="app-menu-btn" aria-expanded="false" aria-controls="sidebar">
+            <span aria-hidden="true">☰</span> Menú
+          </button>
+          <span class="app-topbar-title">Cocina</span>
+        </header>
+      <main class="app-content flex-1 p-3 sm:p-4 min-h-0 overflow-auto">
+        <header class="mb-4 flex flex-wrap justify-between items-center gap-2">
+          <h1 class="text-3xl font-bold">Monitor Cocina</h1>
+          <p id="kitchen-status" class="text-orange-400 font-semibold">0 en proceso</p>
+        </header>
+        <nav class="flex flex-wrap gap-2 mb-4" aria-label="Secciones cocina">
+          <button type="button" data-kitchen-tab="proceso" class="kitchen-tab kitchen-tab-active px-4 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] bg-orange-600 text-white">
+            Pendientes / En preparación (<span id="kitchen-tab-proceso-count">0</span>)
+          </button>
+          <button type="button" data-kitchen-tab="listos" class="kitchen-tab px-4 py-2.5 rounded-xl font-semibold text-sm min-h-[44px] bg-zinc-800">
+            Listos (<span id="kitchen-tab-listos-count">0</span>)
+          </button>
+        </nav>
+        <section id="kitchen-board" class="kitchen-board"></section>
+      </main>
+      </div>
+    </div>
+    <!-- Sonido opcional: coloque new-order.mp3 en /sounds/; si no existe, se usa pitido del sistema -->
+    <audio id="new-order-sound" src="../../sounds/new-order.mp3" preload="auto"></audio>
+    <div id="toast-root" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <script type="module" src="./cocina.js"></script>
+  </body>
+</html>

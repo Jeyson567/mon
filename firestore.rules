@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function auth() {
+      return request.auth != null;
+    }
+
+    function rolUsuario() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol;
+    }
+
+    function esAdmin() {
+      return auth() && rolUsuario() == "admin";
+    }
+
+    function esMesero() {
+      return auth() && rolUsuario() == "mesero";
+    }
+
+    function esCocina() {
+      return auth() && rolUsuario() == "cocina";
+    }
+
+    function esCaja() {
+      return auth() && rolUsuario() == "caja";
+    }
+
+    match /usuarios/{uid} {
+      allow read: if auth() && (request.auth.uid == uid || esAdmin());
+      allow create, update, delete: if esAdmin();
+    }
+
+    match /mesas/{docId} {
+      allow read: if auth();
+      allow create, update, delete: if esAdmin();
+      allow update: if esMesero() || esCaja();
+    }
+
+    match /pedidos/{docId} {
+      allow read: if auth();
+      allow create, update: if esAdmin() || esMesero() || esCocina() || esCaja();
+      allow delete: if esAdmin();
+    }
+
+    match /ventas/{docId} {
+      allow read: if esAdmin() || esCaja();
+      allow create, update: if esAdmin() || esCaja();
+      allow delete: if esAdmin();
+    }
+
+    match /cierres_caja/{docId} {
+      allow read, write: if esAdmin() || esCaja();
+    }
+
+    match /inventario/{docId} {
+      allow read: if auth();
+      allow create, delete: if esAdmin();
+      allow update: if esAdmin() || esMesero() || esCaja();
+    }
+
+    match /movimientos_inventario/{docId} {
+      allow read: if esAdmin() || esCaja();
+      allow create: if esAdmin() || esCaja() || esMesero();
+      allow update, delete: if esAdmin();
+    }
+
+    match /productos/{docId} {
+      allow read: if auth();
+      allow write: if esAdmin();
+    }
+
+    match /categorias/{docId} {
+      allow read: if auth();
+      allow write: if esAdmin();
+    }
+
+    match /configuracion/{docId} {
+      allow read: if auth();
+      allow write: if esAdmin() || esCaja();
+    }
+
+    match /notificaciones/{docId} {
+      allow read, write: if auth();
+    }
+  }
+}
