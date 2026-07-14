@@ -17,6 +17,7 @@ export const RECURSOS = {
   productos: "productos",
   categorias: "categorias",
   inventario: "inventario",
+  habitaciones: "habitaciones",
   usuarios: "usuarios",
   reportes: "reportes",
   configuracion: "configuracion"
@@ -24,7 +25,7 @@ export const RECURSOS = {
 
 export const permisosPorRol = {
   admin: Object.values(RECURSOS),
-  mesero: [RECURSOS.mesas, RECURSOS.pedidos],
+  mesero: [RECURSOS.mesas, RECURSOS.pedidos, RECURSOS.caja, RECURSOS.tickets],
   cocina: [RECURSOS.cocina, RECURSOS.monitor],
   caja: [RECURSOS.caja, RECURSOS.tickets]
 };

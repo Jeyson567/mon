@@ -43,8 +43,8 @@ service cloud.firestore {
     }
 
     match /ventas/{docId} {
-      allow read: if esAdmin() || esCaja();
-      allow create, update: if esAdmin() || esCaja();
+      allow read: if esAdmin() || esCaja() || esMesero();
+      allow create, update: if esAdmin() || esCaja() || esMesero();
       allow delete: if esAdmin();
     }
 
@@ -56,6 +56,12 @@ service cloud.firestore {
       allow read: if auth();
       allow create, delete: if esAdmin();
       allow update: if esAdmin() || esMesero() || esCaja();
+    }
+
+    match /habitaciones/{docId} {
+      allow read: if esAdmin() || esCaja() || esMesero();
+      allow create, delete: if esAdmin() || esCaja();
+      allow update: if esAdmin() || esCaja() || esMesero();
     }
 
     match /movimientos_inventario/{docId} {
@@ -76,7 +82,7 @@ service cloud.firestore {
 
     match /configuracion/{docId} {
       allow read: if auth();
-      allow write: if esAdmin() || esCaja();
+      allow write: if esAdmin() || esCaja() || esMesero();
     }
 
     match /notificaciones/{docId} {

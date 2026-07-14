@@ -47,7 +47,13 @@ export const descuentosAdicionalesCarrito = (carrito = [], inventarioItems = [])
     }
     const cant = Number(inv.cantidad ?? 0) * Number(linea.cantidad ?? 1);
     if (cant <= 0) continue;
-    const prev = map.get(id) ?? { inventarioId: id, cantidad: 0, nombre: linea.nombre };
+    const item = inventarioItems.find((i) => i?.id === id);
+    const prev = map.get(id) ?? {
+      inventarioId: id,
+      cantidad: 0,
+      nombre: linea.nombre,
+      tipoInventario: item?.tipoInventario ?? null
+    };
     prev.cantidad += cant;
     map.set(id, prev);
   }
@@ -72,7 +78,13 @@ export const descuentosMenuCarrito = (carrito = [], productos = [], inventarioIt
       }
       const cant = Number(ins.cantidad ?? 0) * qty;
       if (cant <= 0) continue;
-      const prev = map.get(id) ?? { inventarioId: id, cantidad: 0, nombre: p.nombre };
+      const item = inventarioItems.find((i) => i?.id === id);
+      const prev = map.get(id) ?? {
+        inventarioId: id,
+        cantidad: 0,
+        nombre: p.nombre,
+        tipoInventario: item?.tipoInventario ?? null
+      };
       prev.cantidad += cant;
       map.set(id, prev);
     }
@@ -165,7 +177,10 @@ export const reembolsarInventarioCarritoMesa = async ({
   motivo,
   inventarioItems = []
 }) => {
-  const items = descuentosAdicionalesCarrito(carrito, inventarioItems);
+  const items = descuentosAdicionalesCarrito(
+    carrito.filter((linea) => linea?.inventarioDescuento?.aplicado === true),
+    inventarioItems
+  );
   if (!items.length) return { ok: 0, fallos: [] };
   return reembolsarInventarioItems({ items, usuario, motivo, inventarioItems });
 };

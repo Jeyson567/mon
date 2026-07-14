@@ -27,7 +27,8 @@ export const colecciones = {
   configuracion: "configuracion",
   notificaciones: "notificaciones",
   inventario: "inventario",
-  movimientosInventario: "movimientos_inventario"
+  movimientosInventario: "movimientos_inventario",
+  habitaciones: "habitaciones"
 };
 
 export const getUsuario = async (uid) => {
@@ -95,6 +96,24 @@ export const saveMesa = async (id, payload) => {
 
 export const removeMesa = async (id) => deleteDoc(doc(db, colecciones.mesas, id));
 
+export const listenHabitaciones = (callback) =>
+  snapshotListener("habitaciones", query(collection(db, colecciones.habitaciones), orderBy("numero", "asc")), callback);
+
+export const saveHabitacion = async (id, payload) => {
+  if (id) {
+    await updateDoc(doc(db, colecciones.habitaciones, id), payload);
+    return id;
+  }
+  const created = await addDoc(collection(db, colecciones.habitaciones), {
+    ...payload,
+    consumos: payload.consumos ?? [],
+    fechaCreacion: serverTimestamp()
+  });
+  return created.id;
+};
+
+export const removeHabitacion = async (id) => deleteDoc(doc(db, colecciones.habitaciones, id));
+
 /** Cocina: pendiente, preparando, listo (excluye entregado y cancelado) */
 export const listenPedidosCocina = (callback) => {
   const estadosActivos = new Set(["pendiente", "preparando", "listo"]);
@@ -105,6 +124,9 @@ export const listenPedidosCocina = (callback) => {
     callback(activos);
   });
 };
+
+export const listenPedidos = (callback) =>
+  snapshotListener("pedidos", collection(db, colecciones.pedidos), callback);
 
 export const savePedido = async (payload) =>
   addDoc(collection(db, colecciones.pedidos), {
@@ -229,19 +251,219 @@ export const getProductosDisponibles = async () => {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 };
 
-export const cobrarMesaConTicket = async ({ mesaId, ventaPayload }) => {
+const normalizeInventoryDiscounts = (items = []) => {
+  const map = new Map();
+  for (const item of items) {
+    const inventarioId = String(item?.inventarioId ?? "").trim();
+    const cantidad = Number(item?.cantidad ?? 0);
+    if (!inventarioId || !Number.isFinite(cantidad) || cantidad <= 0) continue;
+
+    const prev = map.get(inventarioId) ?? {
+      inventarioId,
+      cantidad: 0,
+      nombre: item?.nombre ?? item?.producto ?? inventarioId,
+      tipoInventario: item?.tipoInventario ?? null
+    };
+    prev.cantidad += cantidad;
+    map.set(inventarioId, prev);
+  }
+  return [...map.values()];
+};
+
+const buildStockError = ({ item, data, disponible }) => {
+  const requerido = Number(item.cantidad ?? 0);
+  const nombre = data?.nombre ?? item.nombre ?? item.inventarioId;
+  const unidad = data?.unidad ? ` ${data.unidad}` : "";
+  return `Stock insuficiente de ${nombre}. Disponible: ${disponible}${unidad}. Requerido: ${requerido}${unidad}.`;
+};
+
+export const cobrarMesaConTicket = async ({ mesaId, ventaPayload, inventarioDescuentos }) => {
   const ticketRef = doc(db, colecciones.configuracion, "tickets");
   const mesaRef = doc(db, colecciones.mesas, mesaId);
   const ventaRef = doc(collection(db, colecciones.ventas));
+  const descuentos = normalizeInventoryDiscounts(inventarioDescuentos ?? ventaPayload?.inventarioDescuentos ?? []);
 
   return runTransaction(db, async (tx) => {
     const ticketSnap = await tx.get(ticketRef);
+    const mesaSnap = await tx.get(mesaRef);
+    if (!mesaSnap.exists()) throw new Error("Mesa no encontrada");
+
+    const inventarioSnaps = [];
+    for (const item of descuentos) {
+      const ref = doc(db, colecciones.inventario, item.inventarioId);
+      const snap = await tx.get(ref);
+      if (!snap.exists()) throw new Error(`Producto de inventario no encontrado: ${item.nombre ?? item.inventarioId}`);
+      inventarioSnaps.push({ item, ref, snap });
+    }
+
+    for (const entry of inventarioSnaps) {
+      const data = entry.snap.data();
+      const disponible = Number(data?.stock ?? 0);
+      if (disponible < Number(entry.item.cantidad ?? 0)) {
+        throw new Error(buildStockError({ item: entry.item, data, disponible }));
+      }
+    }
+
     const ultimoTicket = ticketSnap.exists() ? ticketSnap.data().ultimoTicket ?? 0 : 0;
     const correlativo = ultimoTicket + 1;
     const ticket = `TK-${String(correlativo).padStart(6, "0")}`;
+    const ahora = new Date();
+    const usuarioMovimiento = ventaPayload?.cobradoPor ?? ventaPayload?.usuario ?? ventaPayload?.mesero ?? "caja";
+    const mesaData = mesaSnap.data();
+    const carritoActual = Array.isArray(mesaData?.carrito) ? mesaData.carrito : [];
+    const idsCobrados = new Set(ventaPayload?.lineaIdsCobradas ?? []);
+    const indicesCobrados = new Set(ventaPayload?.indicesCobrados ?? []);
+    const esParcial = ventaPayload?.parcial === true;
+    const carritoRestante = esParcial
+      ? carritoActual.filter((linea, index) => {
+          const id = linea?.lineaId;
+          return !(id ? idsCobrados.has(id) : indicesCobrados.has(index));
+        })
+      : [];
+    const totalRestante = carritoRestante.reduce((sum, linea) => sum + Number(linea?.subtotal ?? 0), 0);
 
     tx.set(ticketRef, { ultimoTicket: correlativo }, { merge: true });
-    tx.set(ventaRef, { ...ventaPayload, ticket, correlativo, fechaRegistro: serverTimestamp() });
+    tx.set(ventaRef, {
+      ...ventaPayload,
+      inventarioDescuentos: descuentos,
+      inventarioAplicado: descuentos.length > 0,
+      ticket,
+      correlativo,
+      fechaRegistro: serverTimestamp()
+    });
+
+    for (const entry of inventarioSnaps) {
+      const data = entry.snap.data();
+      const stockAnterior = Number(data?.stock ?? 0);
+      const cantidad = Number(entry.item.cantidad ?? 0);
+      const stockNuevo = stockAnterior - cantidad;
+      tx.update(entry.ref, { stock: stockNuevo });
+      tx.set(doc(collection(db, colecciones.movimientosInventario)), {
+        inventarioId: entry.item.inventarioId,
+        producto: data?.nombre ?? entry.item.nombre ?? entry.item.inventarioId,
+        cantidad,
+        tipoMovimiento: "venta",
+        motivo: `Venta ${ticket}`,
+        usuario: usuarioMovimiento,
+        tipoInventario: data?.tipoInventario ?? entry.item.tipoInventario ?? "cocina",
+        stockAnterior,
+        stockNuevo,
+        fecha: ahora.toLocaleDateString("es-GT"),
+        hora: ahora.toLocaleTimeString("es-GT"),
+        ventaId: ventaRef.id,
+        ticket,
+        fechaRegistro: serverTimestamp()
+      });
+    }
+
+    tx.update(
+      mesaRef,
+      esParcial && carritoRestante.length
+        ? {
+            estado: "ocupada",
+            total: totalRestante,
+            carrito: carritoRestante,
+            ultimoCobroParcial: {
+              ticket,
+              total: ventaPayload?.total ?? 0,
+              fecha: ahora.toISOString()
+            }
+          }
+        : {
+            estado: "libre",
+            total: 0,
+            carrito: [],
+            meseroAsignado: "",
+            notasPedido: "",
+            fechaApertura: null
+          }
+    );
+
+    return { ticket, correlativo, ventaId: ventaRef.id };
+  });
+};
+
+export const cargarMesaAHabitacion = async ({ mesaId, habitacionId, consumoPayload, inventarioDescuentos }) => {
+  const mesaRef = doc(db, colecciones.mesas, mesaId);
+  const habitacionRef = doc(db, colecciones.habitaciones, habitacionId);
+  const cargoRef = doc(collection(db, colecciones.ventas));
+  const descuentos = normalizeInventoryDiscounts(inventarioDescuentos ?? consumoPayload?.inventarioDescuentos ?? []);
+
+  return runTransaction(db, async (tx) => {
+    const mesaSnap = await tx.get(mesaRef);
+    const habitacionSnap = await tx.get(habitacionRef);
+    if (!mesaSnap.exists()) throw new Error("Mesa no encontrada");
+    if (!habitacionSnap.exists()) throw new Error("Habitación no encontrada");
+    const habitacion = habitacionSnap.data();
+    if (habitacion?.estado && habitacion.estado !== "ocupada") throw new Error("La habitación no está ocupada");
+
+    const inventarioSnaps = [];
+    for (const item of descuentos) {
+      const ref = doc(db, colecciones.inventario, item.inventarioId);
+      const snap = await tx.get(ref);
+      if (!snap.exists()) throw new Error(`Producto de inventario no encontrado: ${item.nombre ?? item.inventarioId}`);
+      inventarioSnaps.push({ item, ref, snap });
+    }
+
+    for (const entry of inventarioSnaps) {
+      const data = entry.snap.data();
+      const disponible = Number(data?.stock ?? 0);
+      if (disponible < Number(entry.item.cantidad ?? 0)) {
+        throw new Error(buildStockError({ item: entry.item, data, disponible }));
+      }
+    }
+
+    const ahora = new Date();
+    const cargo = {
+      id: cargoRef.id,
+      origen: consumoPayload?.origen ?? "Restaurante",
+      mesa: consumoPayload?.mesa ?? mesaSnap.data()?.numero ?? mesaId,
+      productos: consumoPayload?.productos ?? [],
+      subtotal: consumoPayload?.subtotal ?? 0,
+      total: consumoPayload?.total ?? 0,
+      fecha: ahora.toLocaleDateString("es-GT"),
+      hora: ahora.toLocaleTimeString("es-GT"),
+      usuario: consumoPayload?.usuario ?? "caja",
+      estado: "pendiente_checkout"
+    };
+
+    tx.set(cargoRef, {
+      ...consumoPayload,
+      habitacionId,
+      habitacionNumero: habitacion.numero ?? "",
+      inventarioDescuentos: descuentos,
+      estado: "cargado_habitacion",
+      fechaRegistro: serverTimestamp()
+    });
+
+    tx.update(habitacionRef, {
+      consumos: [...(habitacion.consumos ?? []), cargo],
+      totalConsumos: Number(habitacion.totalConsumos ?? 0) + Number(cargo.total ?? 0)
+    });
+
+    for (const entry of inventarioSnaps) {
+      const data = entry.snap.data();
+      const stockAnterior = Number(data?.stock ?? 0);
+      const cantidad = Number(entry.item.cantidad ?? 0);
+      const stockNuevo = stockAnterior - cantidad;
+      tx.update(entry.ref, { stock: stockNuevo });
+      tx.set(doc(collection(db, colecciones.movimientosInventario)), {
+        inventarioId: entry.item.inventarioId,
+        producto: data?.nombre ?? entry.item.nombre ?? entry.item.inventarioId,
+        cantidad,
+        tipoMovimiento: "venta",
+        motivo: `Cargo habitación ${habitacion.numero ?? ""}`,
+        usuario: consumoPayload?.usuario ?? "caja",
+        tipoInventario: data?.tipoInventario ?? entry.item.tipoInventario ?? "cocina",
+        stockAnterior,
+        stockNuevo,
+        fecha: ahora.toLocaleDateString("es-GT"),
+        hora: ahora.toLocaleTimeString("es-GT"),
+        ventaId: cargoRef.id,
+        fechaRegistro: serverTimestamp()
+      });
+    }
+
     tx.update(mesaRef, {
       estado: "libre",
       total: 0,
@@ -251,7 +473,7 @@ export const cobrarMesaConTicket = async ({ mesaId, ventaPayload }) => {
       fechaApertura: null
     });
 
-    return { ticket, correlativo, ventaId: ventaRef.id };
+    return { cargoId: cargoRef.id };
   });
 };
 
@@ -298,6 +520,16 @@ export const removeProducto = async (id) => deleteDoc(doc(db, colecciones.produc
 export const listenInventario = (callback) =>
   snapshotListener("inventario", query(collection(db, colecciones.inventario), orderBy("nombre", "asc")), callback);
 
+export const listenMovimientosInventario = (callback) =>
+  snapshotListener("movimientos_inventario", collection(db, colecciones.movimientosInventario), (items) => {
+    const sorted = [...items].sort((a, b) => {
+      const ta = a.fechaRegistro?.seconds ?? 0;
+      const tb = b.fechaRegistro?.seconds ?? 0;
+      return tb - ta;
+    });
+    callback(sorted.slice(0, 300));
+  });
+
 export const saveInventarioItem = async (id, payload) => {
   if (id) {
     await updateDoc(doc(db, colecciones.inventario, id), payload);
@@ -320,34 +552,43 @@ export const ajustarStockInventario = async ({
   usuario
 }) => {
   const ref = doc(db, colecciones.inventario, inventarioId);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) {
-    console.error("[firestore] Inventario no existe:", inventarioId);
-    throw new Error("Producto de inventario no encontrado");
-  }
+  return runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists()) {
+      console.error("[firestore] Inventario no existe:", inventarioId);
+      throw new Error("Producto de inventario no encontrado");
+    }
 
-  const snapData = snap.data();
-  if (!snapData) throw new Error("Documento de inventario sin datos");
+    const snapData = snap.data();
+    if (!snapData) throw new Error("Documento de inventario sin datos");
 
-  const actual = snapData.stock ?? 0;
-  let nuevo = actual;
-  if (tipoMovimiento === "entrada" || tipoMovimiento === "reembolso") nuevo = actual + cantidad;
-  else if (tipoMovimiento === "salida") nuevo = actual - cantidad;
-  else nuevo = cantidad;
+    const actual = Number(snapData.stock ?? 0);
+    const cantidadNum = Number(cantidad ?? 0);
+    let nuevo = actual;
+    if (tipoMovimiento === "entrada" || tipoMovimiento === "reembolso") nuevo = actual + cantidadNum;
+    else if (tipoMovimiento === "salida" || tipoMovimiento === "venta") nuevo = actual - cantidadNum;
+    else nuevo = cantidadNum;
 
-  if (nuevo < 0) throw new Error("El stock no puede quedar negativo");
+    if (nuevo < 0) throw new Error("El stock no puede quedar negativo");
 
-  await updateDoc(ref, { stock: nuevo });
-  await registrarMovimientoInventario({
-    producto: snapData.nombre ?? inventarioId,
-    cantidad,
-    tipoMovimiento,
-    motivo,
-    usuario,
-    fecha: new Date().toLocaleDateString("es-GT"),
-    hora: new Date().toLocaleTimeString("es-GT")
+    const ahora = new Date();
+    tx.update(ref, { stock: nuevo });
+    tx.set(doc(collection(db, colecciones.movimientosInventario)), {
+      inventarioId,
+      producto: snapData.nombre ?? inventarioId,
+      cantidad: cantidadNum,
+      tipoMovimiento,
+      motivo,
+      usuario,
+      tipoInventario: snapData.tipoInventario ?? "cocina",
+      stockAnterior: actual,
+      stockNuevo: nuevo,
+      fecha: ahora.toLocaleDateString("es-GT"),
+      hora: ahora.toLocaleTimeString("es-GT"),
+      fechaRegistro: serverTimestamp()
+    });
+    return nuevo;
   });
-  return nuevo;
 };
 
 // ——— Usuarios ———

@@ -7,6 +7,7 @@ import { startProductosListener } from "./productos.js";
 import { startMesasListener } from "./mesas.js";
 import { startUsuariosListener } from "./usuarios.js";
 import { startReportesListener } from "./reportes.js";
+import { startHabitacionesListener } from "./habitaciones.js";
 
 // 1) Enlazar botones INMEDIATAMENTE (no esperar auth)
 bindAdminEvents();
@@ -33,6 +34,7 @@ const startAllListeners = () => {
     { name: "inventario", fn: startInventarioListener },
     { name: "productos", fn: startProductosListener },
     { name: "mesas", fn: startMesasListener },
+    { name: "habitaciones", fn: startHabitacionesListener },
     { name: "usuarios", fn: startUsuariosListener },
     { name: "reportes", fn: startReportesListener }
   ];

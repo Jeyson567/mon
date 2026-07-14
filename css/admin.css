@@ -1,5 +1,5 @@
 .admin-tab.active {
-  background: rgb(234 88 12);
+  background: var(--gm-blue, rgb(37 99 235));
   color: white;
 }
 
@@ -14,20 +14,23 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--gm-text, #172033);
 }
 
 .admin-table th,
 .admin-table td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgb(63 63 70);
+  border-bottom: 1px solid var(--gm-border, #dbe3ee);
   text-align: left;
 }
 
 .admin-table th {
-  color: rgb(161 161 170);
+  color: var(--gm-muted, #64748b);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  background: #f8fafc;
 }
 
 .inventario-row {

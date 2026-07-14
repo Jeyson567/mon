@@ -4,13 +4,15 @@ import { handleProductoAction } from "./productos.js";
 import { handleMesaAction } from "./mesas.js";
 import { handleInventarioAction } from "./inventario.js";
 import { handleUsuarioAction } from "./usuarios.js";
+import { handleHabitacionAction } from "./habitaciones.js";
 
 const handlers = {
   categoria: handleCategoriaAction,
   producto: handleProductoAction,
   mesa: handleMesaAction,
   inventario: handleInventarioAction,
-  usuario: handleUsuarioAction
+  usuario: handleUsuarioAction,
+  habitacion: handleHabitacionAction
 };
 
 let eventsBound = false;

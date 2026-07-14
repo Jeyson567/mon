@@ -14,7 +14,7 @@ const inventarioOptions = () =>
     .filter((i) => i?.nombre && i?.id)
     .map(
       (i) =>
-        `<option value="${escapeHtml(i.id)}">${escapeHtml(i.nombre)} (stock: ${i.stock ?? 0})</option>`
+        `<option value="${escapeHtml(i.id)}">${escapeHtml(i.nombre)} — ${escapeHtml(i.tipoInventario === "bar" ? "Bar" : "Cocina")} (stock: ${i.stock ?? 0})</option>`
     )
     .join("");
 

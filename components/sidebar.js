@@ -11,12 +11,18 @@ const menuByRole = {
     { label: "Reimpresión tickets", href: "/modules/reimpresion/reimpresion.html", icon: "🧾" },
     { label: "Productos", href: "/modules/admin/admin.html#productos", icon: "☰" },
     { label: "Categorías", href: "/modules/admin/admin.html#categorias", icon: "◫" },
-    { label: "Inventario", href: "/modules/admin/admin.html#inventario", icon: "📦" },
+    { label: "Inv. Cocina", href: "/modules/admin/admin.html#inventario-cocina", icon: "IC" },
+    { label: "Inv. Bar", href: "/modules/admin/admin.html#inventario-bar", icon: "IB" },
+    { label: "Habitaciones", href: "/modules/admin/admin.html#habitaciones", icon: "H" },
     { label: "Usuarios", href: "/modules/admin/admin.html#usuarios", icon: "👤" },
     { label: "Reportes", href: "/modules/admin/admin.html#reportes", icon: "📊" },
     { label: "Configuración", href: "/modules/admin/admin.html#configuracion", icon: "⚙" }
   ],
-  [ROLES.mesero]: [{ label: "Mesas y pedidos", href: "/modules/mesero/mesero.html", icon: "▦" }],
+  [ROLES.mesero]: [
+    { label: "Mesas y pedidos", href: "/modules/mesero/mesero.html", icon: "▦" },
+    { label: "Cobros", href: "/modules/caja/caja.html", icon: "$" },
+    { label: "Historial", href: "/modules/caja/caja.html#historial", icon: "#" }
+  ],
   [ROLES.cocina]: [{ label: "Monitor Cocina", href: "/modules/cocina/cocina.html", icon: "🍳" }],
   [ROLES.caja]: [
     { label: "Cobros", href: "/modules/caja/caja.html", icon: "💵" },

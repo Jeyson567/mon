@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Administración | GRAN MONTANA</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="../../css/global.css" />
     <link rel="stylesheet" href="../../css/layout.css" />
     <link rel="stylesheet" href="../../css/admin.css" />
@@ -30,7 +32,9 @@
             <button type="button" data-tab="productos" class="admin-tab active px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Productos</button>
             <button type="button" data-tab="categorias" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Categorías</button>
             <button type="button" data-tab="mesas" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Mesas</button>
-            <button type="button" data-tab="inventario" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Inventario</button>
+            <button type="button" data-tab="inventario-cocina" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Inventario Cocina</button>
+            <button type="button" data-tab="inventario-bar" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Inventario Bar</button>
+            <button type="button" data-tab="habitaciones" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Habitaciones</button>
             <button type="button" data-tab="usuarios" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Usuarios</button>
             <button type="button" data-tab="reportes" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Reportes</button>
             <button type="button" data-tab="configuracion" class="admin-tab px-3 py-1.5 rounded-lg text-sm bg-zinc-800">Config</button>
@@ -90,26 +94,131 @@
         <div id="lista-mesas" class="table-grid"></div>
       </section>
 
-      <!-- INVENTARIO -->
-      <section id="panel-inventario" class="admin-panel">
+      <!-- INVENTARIO COCINA -->
+      <section id="panel-inventario-cocina" class="admin-panel">
         <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
-          <h2 class="text-lg font-bold">Inventario</h2>
-          <button type="button" data-admin-action="inventario:add" class="btn-primary">+ Agregar producto inventario</button>
+          <div>
+            <h2 class="text-lg font-bold">Inventario Cocina</h2>
+            <p class="text-sm text-zinc-400">Materia prima, recetas, insumos y productos usados por cocina.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-export-inventario="cocina" class="btn-secondary">Exportar PDF</button>
+            <button type="button" data-admin-action="inventario:add" data-tipo-inventario="cocina" class="btn-primary">+ Agregar producto</button>
+          </div>
         </div>
+        <div id="inventario-cocina-dashboard" class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4"></div>
         <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
           <table class="admin-table">
             <thead>
               <tr>
+                <th>Código</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Stock</th>
                 <th>Unidad</th>
                 <th>Mínimo</th>
+                <th>Costo</th>
                 <th>Estado</th>
                 <th class="admin-only">Acciones</th>
               </tr>
             </thead>
-            <tbody id="lista-inventario"></tbody>
+            <tbody id="lista-inventario-cocina"></tbody>
+          </table>
+        </div>
+        <h3 class="text-base font-bold mt-6 mb-3">Kardex y movimientos recientes</h3>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Saldo ant.</th>
+                <th>Saldo nuevo</th>
+                <th>Usuario</th>
+                <th>Motivo</th>
+              </tr>
+            </thead>
+            <tbody id="movimientos-inventario-cocina"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INVENTARIO BAR -->
+      <section id="panel-inventario-bar" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-bold">Inventario Bar</h2>
+            <p class="text-sm text-zinc-400">Cervezas, licores, vinos, gaseosas, jugos, agua, energizantes y cocteles.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-export-inventario="bar" class="btn-secondary">Exportar PDF</button>
+            <button type="button" data-admin-action="inventario:add" data-tipo-inventario="bar" class="btn-primary">+ Agregar producto</button>
+          </div>
+        </div>
+        <div id="inventario-bar-dashboard" class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4"></div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>Unidad</th>
+                <th>Mínimo</th>
+                <th>Costo</th>
+                <th>Estado</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-inventario-bar"></tbody>
+          </table>
+        </div>
+        <h3 class="text-base font-bold mt-6 mb-3">Kardex y movimientos recientes</h3>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Saldo ant.</th>
+                <th>Saldo nuevo</th>
+                <th>Usuario</th>
+                <th>Motivo</th>
+              </tr>
+            </thead>
+            <tbody id="movimientos-inventario-bar"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- HABITACIONES -->
+      <section id="panel-habitaciones" class="admin-panel">
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-bold">Habitaciones</h2>
+            <p class="text-sm text-zinc-400">Crea habitaciones, asigna huéspedes y revisa consumos acumulados para checkout.</p>
+          </div>
+          <button type="button" data-admin-action="habitacion:add" class="btn-primary">+ Crear habitación</button>
+        </div>
+        <div class="table-scroll-wrap rounded-2xl border border-zinc-800 bg-zinc-900">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Huésped</th>
+                <th>Estado</th>
+                <th>Ingreso</th>
+                <th>Salida</th>
+                <th>Consumos</th>
+                <th class="admin-only">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="lista-habitaciones"></tbody>
           </table>
         </div>
       </section>

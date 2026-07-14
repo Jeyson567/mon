@@ -4,7 +4,6 @@ import {
   listenInventario,
   updateMesa,
   savePedido,
-  ajustarStockInventario,
   cancelarMesa
 } from "../../firebase/firestore.js";
 import { openFormModal } from "../../components/modal.js";
@@ -352,18 +351,7 @@ const openProductoAdicionalModal = () => {
         const inventarioId = fd.get("inventarioId");
         const cantidadInv = Math.max(0.01, toNumber(fd.get("cantidadInventario"), 1));
         if (!inventarioId) throw new Error("Selecciona un producto de inventario");
-        try {
-          await ajustarStockInventario({
-            inventarioId,
-            cantidad: cantidadInv,
-            tipoMovimiento: "salida",
-            motivo: `Adicional mesa ${mesaActiva?.numero ?? ""}: ${nombre}`,
-            usuario: profileActivo?.nombre ?? profileActivo?.email ?? "mesero"
-          });
-          linea.inventarioDescuento = { inventarioId, cantidad: cantidadInv };
-        } catch (err) {
-          console.warn("[pedido] Inventario adicional no descontado (producto igual se agregó):", err);
-        }
+        linea.inventarioDescuento = { inventarioId, cantidad: cantidadInv, aplicado: false };
       }
 
       carrito.push(linea);
